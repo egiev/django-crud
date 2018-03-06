@@ -1,0 +1,62 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/style.css' %}">
+
+{% if posts %}
+	{% for p in posts %}
+		<h1>{{p.title}}</h1>
+		<p>{{p.author}}</p>
+		<p>{{p.publish_date}}</p>
+		<p>{{p.content}}</p>
+		<h3>Comments</h3>
+		{% for comment in p.post.all %}
+			<div class="comment-container">
+				{% if comment.author and user.is_authenticated%}
+					<p class="title">{{comment.text}}</p>
+					<form class="action-form" action="{% url 'delete_comment' comment.id %}" method="POST">
+						{% csrf_token %}
+						<button type="button">Edit</button>
+						<button type="submit">Delete</button>
+					</form>
+
+					<form class="edit-form" action="{% url 'update_comment' comment.id %}" method="POST">
+						{% csrf_token %}
+						<input type="text" name="comment" value="{{comment.text}}">
+						<button type="submit">Save</button>
+						<button type="button">Cancel</button>
+					</form>
+					<p>{{comment.author}}</p>
+				{% else %}
+					<p>{{comment.text}}</p>
+					<p>Anonymous</p>
+				{% endif %}
+				<p>{{comment.publish_date}}</p>
+			</div>
+		{% endfor %}
+		<form action="{% url 'add_comment' p.id %}" method="POST">
+			{% csrf_token %}
+			<input type="text" name="comment">
+			<button type="submit">Add</button>
+		</form>
+		<hr>
+	{% endfor %}
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	$(document).ready(() => {
+		// On load hide edit form
+		$('.edit-form').hide()
+		console.log('asdfk')
+
+		// Hide / show form
+		$('button[type=button]').click((e) => {
+			var action_name = e.target.innerText.toLowerCase()
+			if(action_name == 'edit'){
+				$(e.target).closest('.comment-container').find('.edit-form').show()
+				$(e.target).closest('.comment-container').find('.action-form, .title').hide()
+			} else if(action_name == 'cancel') {
+				$(e.target).closest('.comment-container').find('.edit-form').hide()
+				$(e.target).closest('.comment-container').find('.action-form, .title').show()
+			}
+		})
+	})
+</script>

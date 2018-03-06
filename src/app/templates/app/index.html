@@ -1,0 +1,57 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/css/style.css' %}">
+
+{% if posts %}
+	{% for p in posts %}
+		<h1>{{p.title}}</h1>
+		<p>{{p.author}}</p>
+		<p>{{p.publish_date}}</p>
+		<p>{{p.content}}</p>
+		<h3>Comment</h3>
+		{% for comment in p.post.all %}
+			<div class="comment-container">
+				{% if comment.author %}
+					<p>{{comment.text}} 
+						<form id="action-form" action="{% url 'delete_comment' comment.id %}" method="POST">
+							{% csrf_token %}
+							<button type="button">Edit</button>
+							<button type="submit">Delete</button>
+						</form>
+					</p>
+					<form id="edit-form" action="{% url 'update_comment' comment.id %}" method="POST">
+						{% csrf_token %}
+						<input type="text" name="comment" value="{{comment.text}}">
+						<button type="submit">Save {{comment.id}}</button>
+						<button type="button">Cancel</button>
+					</form>
+					<p>{{comment.author}}</p>
+				{% else %}
+					<p>{{comment.text}}</p>
+					<p>Anonymous</p>
+				{% endif %}
+				<p>{{comment.publish_date}}</p>
+			</div>
+		{% endfor %}
+		<form action="{% url 'add_comment' p.id %}" method="POST">
+			{% csrf_token %}
+			<input type="text" name="comment">
+			<button type="submit">Add</button>
+		</form>
+		<hr>
+	{% endfor %}
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+	// On load hide edit form
+	$('#edit-form').hide()
+
+	// Hide / show form
+	$('button[type=button]').click((e) => {
+		var action_name = e.target.innerText.toLowerCase()
+		if(action_name == 'edit'){
+			$('#edit-form').show()
+			$('#action-form').hide()
+		}
+		console.log()
+	})
+</script>
