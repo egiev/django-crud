@@ -4,11 +4,17 @@
 
 - Activate virtual environment
 
-`source venv/bin/activate`
+`source django-crud/bin/activate`
 
 - Enter project directory
 
-`cd venv/src`
+`cd django-crud`
+
+* You must have python3 installed in your machine
+
+- Install django 2.0
+
+`pip3 install django`
 
 ### Running the app
 
